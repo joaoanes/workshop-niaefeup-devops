@@ -151,4 +151,11 @@ class: text-center
 
 ### Questions?
 
-#### hi@joaoanes.website
+<div class="mt-6 text-sm space-y-1">
+<div>hi@joaoanes.website</div>
+<div>joao.anes@mindera.com</div>
+</div>
+
+<div class="mt-10 max-w-xl mx-auto text-base opacity-80">
+<strong class="text-yellow-400">Mindera</strong> is always looking for thesis candidates — get in touch if you're interested.
+</div>
