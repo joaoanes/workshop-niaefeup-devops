@@ -2,7 +2,7 @@
 layout: section
 ---
 
-# 6. Provisioning: Minecraft + Dynmap
+# 6. Provisioning: Minecraft + BlueMap
 
 ---
 
@@ -84,36 +84,45 @@ exit               # back to your laptop
 - **Java 21** — the Minecraft server is a Java program. Ubuntu doesn't ship with it.
 - **The server JAR** — we'll use **PaperMC** (a Spigot-compatible server, faster and easier to distribute).
 - **EULA acceptance** — Mojang requires you to `echo eula=true > eula.txt` before the server will boot.
-- **The Dynmap plugin JAR** — dropped into a `plugins/` folder next to the server.
+- **The BlueMap plugin JAR** — dropped into a `plugins/` folder; serves a 3D web map on port 8100.
 - **A way to keep it running** — if we just launch it, it dies when SSH disconnects. We need a **systemd service**.
 
 </VClicks>
 
 ---
 
-# Step by step: the commands
+# Step by step: the install script
 
-```bash
-# 1. Java
+```bash {maxHeight:'320px'}
+# Add 2GB swap — t3.small has only 2GB RAM, Java + apt outrun it.
+if [ ! -f /swapfile ]; then
+  sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile
+  sudo mkswap /swapfile && sudo swapon /swapfile
+fi
+
+# Java 21
 sudo apt-get update -y
 sudo apt-get install -y openjdk-21-jre-headless wget
 
-# 2. A home for the server
-sudo mkdir -p /opt/minecraft/plugins
+# A home for the server
+sudo mkdir -p /opt/minecraft/plugins/BlueMap
 sudo chown -R ubuntu:ubuntu /opt/minecraft
 
-# 3. Download the server and the plugin
-wget -qO /opt/minecraft/server.jar       <PAPERMC_URL>
-wget -qO /opt/minecraft/plugins/Dynmap.jar <DYNMAP_URL>
+# Download server + plugin
+wget -qO /opt/minecraft/server.jar       "<PAPERMC_URL>"
+wget -qO /opt/minecraft/plugins/BlueMap.jar "<BLUEMAP_URL>"
 
-# 4. Accept the EULA
+# Pre-accept BlueMap asset download
+echo 'accept-download: true' > /opt/minecraft/plugins/BlueMap/core.conf
+
+# EULA + offline mode
 echo 'eula=true' > /opt/minecraft/eula.txt
 ```
 
 <VClicks>
 
-- That's the whole install. Nothing exotic — `apt`, `wget`, a couple of files.
-- We still need to **start it**, and make sure it survives reboots.
+- Nothing exotic — `apt`, `wget`, a couple of files.
+- The two new lines that matter: **swap** (so the OS survives Java spikes) and **BlueMap's `accept-download: true`** (or the plugin refuses to render).
 
 </VClicks>
 
@@ -123,13 +132,13 @@ echo 'eula=true' > /opt/minecraft/eula.txt
 
 ```ini
 [Unit]
-Description=Minecraft Server
+Description=Minecraft Server (PaperMC + BlueMap)
 After=network.target
 
 [Service]
 User=ubuntu
 WorkingDirectory=/opt/minecraft
-ExecStart=/usr/bin/java -Xmx1500M -Xms1500M -jar server.jar nogui
+ExecStart=/usr/bin/java -Xmx1024M -Xms1024M -jar /opt/minecraft/server.jar nogui
 Restart=on-failure
 RestartSec=10
 
@@ -139,9 +148,8 @@ WantedBy=multi-user.target
 
 <VClicks>
 
-- Write this to `/etc/systemd/system/minecraft.service`.
-- `sudo systemctl daemon-reload && sudo systemctl enable --now minecraft.service`.
-- Now the server starts at boot, restarts on crash, and runs detached from any shell.
+- Write to `/etc/systemd/system/minecraft.service`, then `daemon-reload && enable && restart`.
+- Server starts at boot, restarts on crash, runs detached from any shell.
 - This is how Linux runs every long-lived service: ssh, nginx, postgres, your app.
 
 </VClicks>
@@ -176,42 +184,46 @@ WantedBy=multi-user.target
 
 # The install resource
 
-```hcl {maxHeight:'400px'}
+```hcl {maxHeight:'380px'}
 resource "null_resource" "minecraft_install" {
   depends_on = [aws_instance.student_instance]
 
   triggers = {
-    instance_id = aws_instance.student_instance.id
+    instance_id    = aws_instance.student_instance.id
+    install_script = filemd5("${path.module}/install.sh")
+    systemd_unit   = filemd5("${path.module}/minecraft.service")
   }
 
   connection {
     type        = "ssh"
     user        = "ubuntu"
     host        = aws_instance.student_instance.public_ip
-    private_key = file("~/.ssh/id_ed25519")
+    private_key = file(pathexpand(var.ssh_private_key_path))
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/install.sh"
+    destination = "/tmp/install.sh"
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/minecraft.service"
+    destination = "/tmp/minecraft.service"
   }
 
   provisioner "remote-exec" {
-    inline = [
-      "sudo apt-get update -y",
-      "sudo apt-get install -y openjdk-21-jre-headless wget unzip",
-      "mkdir -p ~/mc && cd ~/mc",
-      "wget -O spigot.jar https://example.invalid/spigot-1.21.jar",       # TODO: real URL or BuildTools
-      "echo 'eula=true' > eula.txt",
-      "mkdir -p plugins",
-      "wget -O plugins/Dynmap.jar https://dev.bukkit.org/.../Dynmap.jar",  # TODO: pin a version
-      "nohup java -Xmx1500M -jar spigot.jar nogui > server.log 2>&1 &",
-      "sleep 5"
-    ]
+    inline = ["bash /tmp/install.sh"]
   }
 }
 ```
 
-<!--
-TODO: replace the placeholder URLs.
-- Spigot: build via BuildTools at provision time OR mirror a JAR somewhere we control.
-- Dynmap: pin a specific release URL from dev.bukkit.org / modrinth.
--->
+<VClicks>
+
+- Two `file` provisioners copy the script + systemd unit to the box.
+- One `remote-exec` line runs `bash /tmp/install.sh`. That's it.
+- HCL stays small; the recipe lives in real shell, separately testable.
+
+</VClicks>
 
 ---
 
@@ -274,14 +286,31 @@ TODO: replace the placeholder URLs.
 
 # The case for `null_resource`
 
-<VClicks>
+<div class="grid grid-cols-2 gap-6 mt-4">
 
-- **`user_data` fails invisibly** — script runs on the box, errors land in `/var/log/cloud-init-output.log`. Terraform shrugs and reports success.
-- **`null_resource` fails loudly** — `remote-exec` runs in Terraform's foreground. You see every command and every error.
-- **`user_data` runs once** — change the script, no re-run, you'd have to replace the instance.
-- **`null_resource` re-runs on demand** — `terraform apply -replace=null_resource.minecraft_install`, same box, fresh install.
+<div>
 
-</VClicks>
+### `user_data`
+
+- Runs on the box, **errors invisible** to Terraform
+- Errors land in `/var/log/cloud-init-output.log`
+- **Runs once.** Change the script → replace the instance
+- Simpler, but opaque
+
+</div>
+
+<div>
+
+### `null_resource` + `remote-exec`
+
+- Runs in Terraform's foreground — **every error surfaces**
+- Re-runnable: `terraform apply -replace=null_resource.minecraft_install`
+- Same box, fresh install. Iteration is fast
+- More moving parts, but you see what's happening
+
+</div>
+
+</div>
 
 ---
 layout: center
@@ -293,10 +322,10 @@ layout: center
 Minecraft → Multiplayer → Add Server → <your-public-ip>:25565
 ```
 
-## And open the Dynmap
+## And open BlueMap
 
 ```
-http://<your-public-ip>:8123
+http://<your-public-ip>:8100
 ```
 
 ---

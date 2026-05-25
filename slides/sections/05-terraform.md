@@ -141,72 +141,110 @@ Or download the `.exe` from terraform.io.
 
 # Block: `terraform` and `provider`
 
+<div class="grid grid-cols-2 gap-6 mt-4 text-sm">
+
+<div>
+
 ```hcl
 terraform {
   required_providers {
-    aws = { source = "hashicorp/aws", version = "~> 5.0" }
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
   }
 }
+```
 
+**`terraform`** — settings for Terraform itself: which providers it needs, where state lives.
+
+</div>
+
+<div>
+
+```hcl
 provider "aws" {
   region = "eu-west-1"
 }
 ```
 
-<VClicks>
+**`provider`** — configures a specific provider (AWS, Cloudflare, GCP, …) for use in this file.
 
-- **`terraform`** — settings for Terraform itself: which providers are needed, where state lives.
-- **`provider`** — configures a specific provider (AWS, Cloudflare, GCP, …) for use in this file.
+</div>
 
-</VClicks>
+</div>
 
 ---
 
 # Block: `resource` and `data`
 
+<div class="grid grid-cols-2 gap-6 mt-4 text-sm">
+
+<div>
+
 ```hcl
 resource "aws_instance" "web" {
-  ami           = "ami-0c55b159cbfafe1f0"
+  ami           = "ami-0c55..."
   instance_type = "t3.micro"
-}
-
-data "aws_ami" "ubuntu" {
-  most_recent = true
-  owners      = ["099720109477"]
-  filter { name = "name", values = ["ubuntu-*"] }
 }
 ```
 
-<VClicks>
+**`resource`** — something Terraform should **create and manage**. The bread and butter.
 
-- **`resource`** — something Terraform should **create and manage**. The bread and butter.
-- **`data`** — something that already exists and Terraform should **look up** (an AMI, a VPC, an account ID).
+</div>
 
-</VClicks>
+<div>
+
+```hcl
+data "aws_ami" "ubuntu" {
+  most_recent = true
+  owners      = ["099720109477"]
+}
+```
+
+**`data`** — something that already exists and Terraform should **look up** (an AMI, a VPC, an account ID).
+
+</div>
+
+</div>
 
 ---
 
 # Block: `variable` and `output`
 
+<div class="grid grid-cols-2 gap-6 mt-4 text-sm">
+
+<div>
+
 ```hcl
 variable "instance_type" {
-  description = "EC2 instance size"
+  description = "EC2 size"
   type        = string
   default     = "t3.micro"
 }
+```
 
+**`variable`** — input to your configuration. Like function parameters.
+
+</div>
+
+<div>
+
+```hcl
 output "public_ip" {
   value = aws_instance.web.public_ip
 }
 ```
 
-<VClicks>
+**`output`** — values printed after `apply`. Like function return values.
 
-- **`variable`** — input to your configuration. Like function parameters.
-- **`output`** — values printed after `apply`. Like function return values.
-- There are more block types (`module`, `locals`, `terraform`'s `backend`), but these are the ones you'll touch every day.
+</div>
 
-</VClicks>
+</div>
+
+<div class="mt-6 text-sm opacity-80">
+There are more block types (<code>module</code>, <code>locals</code>, <code>terraform</code>'s <code>backend</code>) — these are the ones you'll touch every day.
+</div>
 
 ---
 
@@ -382,13 +420,13 @@ provider "aws" {
 # Step 3 — How do we get into the box? `aws_key_pair`
 
 ```hcl
-resource "aws_key_pair" "student_key" {
-  key_name   = "student-${random_pet.student_id.id}"
-  public_key = file("~/.ssh/id_ed25519.pub")
-}
-
 resource "random_pet" "student_id" {
   length = 2
+}
+
+resource "aws_key_pair" "student_key" {
+  key_name   = "student-${random_pet.student_id.id}"
+  public_key = var.student_public_key
 }
 ```
 
@@ -406,25 +444,29 @@ resource "random_pet" "student_id" {
 
 ```hcl {maxHeight:'320px'}
 resource "aws_security_group" "student_sg" {
-  name = "student-sg-${random_pet.student_id.id}"
+  name        = "student-sg-${random_pet.student_id.id}"
+  description = "SSH + Minecraft + BlueMap"
 
   ingress {
-    from_port   = 22       # SSH
+    description = "SSH"
+    from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port   = 25565    # Minecraft
+    description = "Minecraft"
+    from_port   = 25565
     to_port     = 25565
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port   = 8123     # Dynmap HTTP
-    to_port     = 8123
+    description = "BlueMap HTTP"
+    from_port   = 8100
+    to_port     = 8100
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -441,7 +483,7 @@ resource "aws_security_group" "student_sg" {
 <VClicks>
 
 - Security groups are AWS's firewall: which ports can talk to your instance, from where.
-- Opening 22 (SSH), 25565 (Minecraft), 8123 (Dynmap web map). Everything else is closed.
+- Opening 22 (SSH), 25565 (Minecraft), 8100 (BlueMap web map). Everything else is closed.
 
 </VClicks>
 
@@ -457,6 +499,11 @@ data "aws_ami" "ubuntu" {
   filter {
     name   = "name"
     values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
   }
 }
 ```
@@ -475,7 +522,7 @@ data "aws_ami" "ubuntu" {
 ```hcl
 resource "aws_instance" "student_instance" {
   ami                         = data.aws_ami.ubuntu.id
-  instance_type               = "t3.small"   # 2GB RAM — Minecraft is hungry
+  instance_type               = var.instance_type
   key_name                    = aws_key_pair.student_key.key_name
   vpc_security_group_ids      = [aws_security_group.student_sg.id]
   associate_public_ip_address = true
@@ -483,6 +530,7 @@ resource "aws_instance" "student_instance" {
   tags = {
     Name    = "student-${random_pet.student_id.id}"
     Purpose = "DevOpsWorkshop"
+    Owner   = "student-${random_pet.student_id.id}"
   }
 }
 ```
@@ -526,13 +574,21 @@ terraform apply --var-file=tf.vars
 
 # Step 8 — How do I get the IP back? `output`
 
-```hcl
+```hcl {maxHeight:'320px'}
 output "instance_public_ip" {
   value = aws_instance.student_instance.public_ip
 }
 
 output "ssh_command" {
   value = "ssh ubuntu@${aws_instance.student_instance.public_ip}"
+}
+
+output "minecraft_address" {
+  value = "${aws_instance.student_instance.public_ip}:25565"
+}
+
+output "bluemap_url" {
+  value = "http://${aws_instance.student_instance.public_ip}:8100"
 }
 ```
 

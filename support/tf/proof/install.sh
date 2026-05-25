@@ -8,6 +8,7 @@ set -euxo pipefail
 # Wait for cloud-init so apt doesn't fight with the initial Ubuntu setup.
 cloud-init status --wait || true
 
+# #region swap
 # Add 2GB of swap. t3.small only has 2GB RAM and Java + apt can outrun it.
 if [ ! -f /swapfile ]; then
   sudo fallocate -l 2G /swapfile
@@ -16,11 +17,15 @@ if [ ! -f /swapfile ]; then
   sudo swapon /swapfile
   echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 fi
+# #endregion swap
 
+# #region java
 # Java 21 + wget.
 sudo apt-get update -y
 sudo apt-get install -y openjdk-21-jre-headless wget
+# #endregion java
 
+# #region downloads
 # Make a home for the server.
 sudo mkdir -p /opt/minecraft/plugins/BlueMap
 sudo chown -R ubuntu:ubuntu /opt/minecraft
@@ -32,14 +37,18 @@ wget -qO /opt/minecraft/server.jar \
 # BlueMap 5.16 for Paper.
 wget -qO /opt/minecraft/plugins/BlueMap.jar \
   "https://cdn.modrinth.com/data/swbUV1cr/versions/Vb2ZE8bR/bluemap-5.16-paper.jar"
+# #endregion downloads
 
+# #region bluemap_config
 # Pre-accept BlueMap's asset download — otherwise the plugin refuses to render
 # on first run and prints "accept-download is set to false".
 cat > /opt/minecraft/plugins/BlueMap/core.conf <<'EOF'
 accept-download: true
 metrics: false
 EOF
+# #endregion bluemap_config
 
+# #region server_properties
 # Mojang EULA.
 echo 'eula=true' > /opt/minecraft/eula.txt
 
@@ -57,11 +66,14 @@ online-mode=false
 enforce-secure-profile=false
 EOF
 fi
+# #endregion server_properties
 
+# #region systemd_setup
 # Install the systemd unit (delivered by Terraform's `file` provisioner to /tmp).
 sudo mv /tmp/minecraft.service /etc/systemd/system/minecraft.service
 sudo systemctl daemon-reload
 sudo systemctl enable minecraft.service
 sudo systemctl restart minecraft.service
+# #endregion systemd_setup
 
 echo "Provisioning complete. Server is starting up; world generation + BlueMap render may take a couple of minutes."

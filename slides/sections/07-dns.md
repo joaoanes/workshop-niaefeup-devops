@@ -127,9 +127,9 @@ dig +trace mine.yourdomain.tld   # walk the full chain
 <!-- Hooks into devops-workshop/day2/5dns.md Certbot/Caddy material if there's time. -->
 
 ---
-layout: center
+layout: statement
 ---
 
 # You did the whole loop.
 
-## Code → machine → installed software → name on the internet.
+### Code → machine → installed software → name on the internet.

@@ -41,12 +41,12 @@ TODO: drop in screenshots once captured, or skip and do it all live.
 </VClicks>
 
 ---
-layout: center
+layout: statement
 ---
 
 # Now imagine doing this for 50 machines.
 
-## Or 500. Or every time a deploy fails.
+### Or 500. Or every time a deploy fails.
 
 ---
 

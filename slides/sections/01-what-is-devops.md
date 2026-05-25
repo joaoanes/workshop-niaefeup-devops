@@ -41,14 +41,31 @@ TODO: anecdote — pick one war story (the Friday deploy that took the weekend).
 
 # The rise of CI/CD
 
+<div class="grid grid-cols-2 gap-8 mt-4">
+
+<div>
+
+### CI — Continuous Integration
+
+Every push is automatically built and tested. Breakage shows up in minutes, not weeks.
+
+</div>
+
+<div>
+
+### CD — Continuous Delivery / Deployment
+
+Every passing build is **ready to ship** (delivery) — or actually shipped, automatically (deployment).
+
+</div>
+
+</div>
+
 <VClicks>
 
-- **CI — Continuous Integration**: every change a developer pushes is automatically built and tested. Catches breakage in minutes, not weeks.
-- **CD — Continuous Delivery**: every passing build is *ready* to ship. Releasing is a button press, not a project.
-- **CD — Continuous Deployment** (stricter cousin): every passing build *is* shipped, automatically.
 - Pre-CI/CD: integration was a quarterly event called "merge week" and everybody dreaded it.
-- Post-CI/CD: the pipeline *is* the release process. Tests, security scans, deploys, rollbacks — all scripted.
-- This is the loop DevOps is built around. The tools you'll see today (Terraform, cloud APIs) are pieces of it.
+- Post-CI/CD: the pipeline *is* the release process. Tests, security scans, deploys, rollbacks — scripted.
+- The loop DevOps is built around. Today's tools (Terraform, cloud APIs) are pieces of it.
 
 </VClicks>
 

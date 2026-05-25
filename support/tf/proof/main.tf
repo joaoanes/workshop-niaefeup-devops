@@ -1,3 +1,4 @@
+# #region terraform_block
 terraform {
   required_version = ">= 1.5.0"
 
@@ -20,26 +21,34 @@ terraform {
     path = "terraform.tfstate"
   }
 }
+# #endregion terraform_block
 
+# #region provider
 provider "aws" {
   region = var.region
 }
+# #endregion provider
 
+# #region random_pet
 # Unique nickname for this student's resources.
 resource "random_pet" "student_id" {
   length = 2
 }
+# #endregion random_pet
 
+# #region key_pair
 # Upload student's SSH public key so the EC2 recognizes them.
 resource "aws_key_pair" "student_key" {
   key_name   = "student-${random_pet.student_id.id}"
   public_key = var.student_public_key
 }
+# #endregion key_pair
 
-# Cloud firewall: SSH + Minecraft + Dynmap, everything else closed.
+# #region security_group
+# Cloud firewall: SSH + Minecraft + BlueMap, everything else closed.
 resource "aws_security_group" "student_sg" {
   name        = "student-sg-${random_pet.student_id.id}"
-  description = "SSH + Minecraft + Dynmap"
+  description = "SSH + Minecraft + BlueMap"
 
   ingress {
     description = "SSH"
@@ -72,7 +81,9 @@ resource "aws_security_group" "student_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+# #endregion security_group
 
+# #region ami_data
 # Latest official Ubuntu 22.04 LTS from Canonical.
 data "aws_ami" "ubuntu" {
   most_recent = true
@@ -88,7 +99,9 @@ data "aws_ami" "ubuntu" {
     values = ["x86_64"]
   }
 }
+# #endregion ami_data
 
+# #region instance
 resource "aws_instance" "student_instance" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = var.instance_type
@@ -102,7 +115,9 @@ resource "aws_instance" "student_instance" {
     Owner   = "student-${random_pet.student_id.id}"
   }
 }
+# #endregion instance
 
+# #region null_resource
 # Provisioning: copy install.sh + minecraft.service to the box and run them.
 # Using null_resource (not user_data) so failures surface in `terraform apply`,
 # and so we can re-run with: terraform apply -replace=null_resource.minecraft_install
@@ -136,3 +151,4 @@ resource "null_resource" "minecraft_install" {
     inline = ["bash /tmp/install.sh"]
   }
 }
+# #endregion null_resource
