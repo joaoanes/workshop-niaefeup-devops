@@ -31,74 +31,140 @@ Facilitation notes:
 
 ---
 
-# DNS resolution (the bit we care about most today)
+# DNS resolution
 
-<VClicks>
+```mermaid
+flowchart LR
+  you["You<br/>(browser)"]
+  stub["OS stub<br/>resolver"]
+  recursive["Recursive<br/>resolver<br/>(1.1.1.1, ISP)"]
+  root["Root<br/>servers"]
+  tld["TLD<br/>(.com)"]
+  auth["Authoritative<br/>for google.com"]
+  you --> stub --> recursive
+  recursive --> root --> recursive
+  recursive --> tld --> recursive
+  recursive --> auth --> recursive
+  recursive --> stub --> you
+```
 
-- DNS translates `www.google.com` into an IP address.
-- Your browser asks a resolver. The resolver asks others. Eventually somebody **authoritative** answers.
-- Caching at every layer. TTLs decide for how long.
-
-</VClicks>
+<div class="mt-4 text-sm">Every layer caches. TTL says how long it can hold on.</div>
 
 ---
 
 # Where do names come from? Registrars.
 
-<VClicks>
-
-- You don't own a domain — you **lease** it from a registrar (Namecheap, Cloudflare, GoDaddy, Porkbun).
-- The registrar talks to the registry that runs the TLD (Verisign for `.com`, PIR for `.org`, etc.).
-- When you register a name, you tell the registry **which nameservers (NS records)** are authoritative for your domain.
-- From then on, the whole internet asks *those* nameservers when somebody types your name.
-
-</VClicks>
+```mermaid
+flowchart LR
+  you["You<br/>$10/year"]
+  registrar["Registrar<br/>(Namecheap,<br/>Cloudflare,<br/>Porkbun)"]
+  registry["Registry<br/>(Verisign for .com,<br/>PIR for .org)"]
+  ns["Nameservers<br/>(authoritative<br/>for your domain)"]
+  internet["The rest of<br/>the internet"]
+  you -->|lease| registrar
+  registrar -->|tells| registry
+  registry -->|"NS record:<br/>here's who's authoritative"| ns
+  internet -->|"asks:<br/>where is your.tld?"| ns
+```
 
 ---
 
 # What lives on a nameserver: record types
 
-<VClicks>
+<div class="grid grid-cols-4 gap-3 mt-4 text-sm">
 
-- **A** — domain → IPv4 address
-- **AAAA** — domain → IPv6 address
-- **CNAME** — alias from one name to another
-- **NS** — which nameservers are authoritative
-- **MX** — where to send email for this domain
-- **TXT** — arbitrary text, used for SPF, DKIM, domain verification
-- **SRV** — service location for specific ports/protocols
-- All of these are just key-value entries, plus a TTL telling the world how long it can cache the answer.
+<div class="rounded border border-yellow-500/30 p-3">
 
-</VClicks>
+#### A
+domain → IPv4
+`93.184.215.14`
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-3">
+
+#### AAAA
+domain → IPv6
+`2606:2800::1`
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-3">
+
+#### CNAME
+alias to another name
+`www → example.com`
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-3">
+
+#### NS
+authoritative servers
+`ns1.cloudflare.com`
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-3">
+
+#### MX
+mail server
+`10 mail.example.com`
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-3">
+
+#### TXT
+arbitrary text
+`v=spf1 ...` / DKIM / verification
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-3">
+
+#### SRV
+service + port
+`_minecraft._tcp 25565`
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-3 bg-yellow-500/5">
+
+#### TTL
+applies to all of them — how long the rest of the internet can cache the answer
+
+</div>
+
+</div>
 
 ---
 
-# Why HTTPS?
+# HTTPS = confidentiality + authenticity
 
-<VClicks>
+<div class="grid grid-cols-2 gap-6 mt-4">
 
-- Plain HTTP is **readable by anyone on the path** — your ISP, the coffee shop wifi, every router in between.
-- HTTPS = HTTP wrapped in **TLS**, an encryption layer.
-- Two problems TLS solves at once:
-  - **Confidentiality** — nobody between you and the server can read the payload.
-  - **Authenticity** — you know you're actually talking to `google.com`, not someone pretending.
-- Under the hood: **public-key cryptography** for the initial handshake (RSA, ECDSA, **Diffie–Hellman** key exchange), then a fast symmetric cipher for the bulk traffic.
-- You don't need to know the math today. You do need to know it's not optional.
+<div>
 
-</VClicks>
+### Confidentiality
+Nobody on the path can read the payload. Not your ISP, not the coffee-shop wifi, not the routers in between.
 
----
+</div>
 
-# HTTPS / TLS in one slide
+<div>
 
-<VClicks>
+### Authenticity
+You're actually talking to `google.com`. The server proved it with a **certificate** signed by a CA your browser trusts.
 
-- HTTPS = HTTP over TLS.
-- The server presents a **certificate**; your browser checks it against trusted CAs (Certificate Authorities).
-- Key exchange establishes a shared secret. From here on, encrypted.
-- This is why we will care about **certificates** later when we put a domain on our server.
+</div>
 
-</VClicks>
+</div>
+
+<div class="mt-6 text-sm opacity-80">
+
+Under the hood: public-key cryptography for the handshake (RSA, ECDSA, **Diffie–Hellman**), then a fast symmetric cipher for the bulk traffic. The diagram next has the steps.
+
+</div>
 
 ---
 
@@ -180,27 +246,40 @@ Connection: keep-alive
 
 # What happens on the server side
 
-<VClicks>
+```mermaid
+flowchart LR
+  req["HTTP<br/>GET /"]
+  lb["Load<br/>balancer"]
+  app1["App server"]
+  app2["App server"]
+  app3["App server"]
+  cache[("Cache<br/>(in-memory)")]
+  resp["200 OK<br/>+ HTML"]
+  req --> lb
+  lb --> app1
+  lb --> app2
+  lb -.-> app3
+  app1 -->|hit| cache
+  cache --> resp
+  app1 -.->|miss: render| resp
+```
 
-- **Load balancer** — your request usually hits one of these first. Distributes traffic across many app servers so no single one drowns.
-- **App server selection** — the LB picks a healthy server, possibly one near you, possibly one with spare capacity.
-- **Routing** — the chosen server's code decides what to do with `GET /`. Often: check a cache, render a page, return it.
-- **Cache** — if the homepage was just sent to someone else, a copy is probably sitting in memory. Sub-millisecond response.
-- The server sends back HTML, plus a status code (200, hopefully).
-
-</VClicks>
+<div class="mt-4 text-sm opacity-80">Most "fast" websites are fast because of the cache. A miss is several orders of magnitude slower than a hit.</div>
 
 ---
 
 # Then the browser renders
 
-<VClicks>
+```mermaid
+flowchart LR
+  html["HTML"]
+  dom["DOM"]
+  fetch["Fetch CSS,<br/>JS, images<br/>(whole chain<br/>again, per asset)"]
+  layout["Layout +<br/>style"]
+  paint["Paint"]
+  js["JS runs<br/>(hydration,<br/>lazy load)"]
+  eyes["Your eyes<br/>see the logo"]
+  html --> dom --> fetch --> layout --> paint --> js --> eyes
+```
 
-- The browser parses the HTML and builds the **DOM** (Document Object Model).
-- It discovers references to CSS, JavaScript, images — and fires off requests for each. Each may walk this whole chain again.
-- CSS is applied; layout is computed; pixels are painted.
-- JavaScript runs. Async, deferred, or blocking depending on how it's loaded.
-- Modern frontends do a lot more work after the first paint: hydration, lazy loading, prefetching the next page.
-- Your eyes see a Google logo. Done.
-
-</VClicks>
+<div class="mt-4 text-sm opacity-80">Each image, stylesheet, and script triggers its own DNS → TCP → TLS → HTTP round. Modern sites issue dozens in parallel.</div>

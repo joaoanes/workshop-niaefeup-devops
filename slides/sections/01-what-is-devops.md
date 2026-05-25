@@ -26,16 +26,42 @@ TODO: anecdote — pick one war story (the Friday deploy that took the weekend).
 
 # The shift
 
-<VClicks>
+<div class="flex flex-col gap-3 mt-4 text-sm">
 
-- **Google SRE (2003)**: treat ops as a software problem. Error budgets, SLOs, automation.
-- **"You build it, you run it"** — Werner Vogels, Amazon, 2006. Devs own production.
-- **The DevOps movement (2009)**: Patrick Debois coins "devopsdays". Culture + tools + practice.
-- **Cloud (2006+)**: AWS makes infrastructure programmable. Suddenly servers can be code.
-- **Containers (2013)**: Docker makes "works on my machine" portable.
-- **The team boundary moves**: instead of dev → ops handoff, one team owns the whole loop.
+<div class="flex gap-4 items-start">
+<div class="font-mono text-yellow-400 w-20 shrink-0 text-right pt-1">2003</div>
+<div><strong>Google SRE</strong> — treat ops as a software problem. Error budgets, SLOs, automation.</div>
+</div>
 
-</VClicks>
+<div class="flex gap-4 items-start">
+<div class="font-mono text-yellow-400 w-20 shrink-0 text-right pt-1">2006</div>
+<div><strong>AWS launches.</strong> Werner Vogels says "<em>you build it, you run it.</em>" Servers become an API call.</div>
+</div>
+
+<div class="flex gap-4 items-start">
+<div class="font-mono text-yellow-400 w-20 shrink-0 text-right pt-1">2009</div>
+<div><strong>devopsdays</strong> — Patrick Debois coins the name. Culture + tools + practice.</div>
+</div>
+
+<div class="flex gap-4 items-start">
+<div class="font-mono text-yellow-400 w-20 shrink-0 text-right pt-1">2013</div>
+<div><strong>Docker.</strong> "Works on my machine" becomes portable.</div>
+</div>
+
+<div class="flex gap-4 items-start">
+<div class="font-mono text-yellow-400 w-20 shrink-0 text-right pt-1">today</div>
+<div>One team owns the whole loop. No more dev → ops handoff.</div>
+</div>
+
+</div>
+
+---
+layout: quote
+---
+
+# "You build it, you run it."
+
+### — Werner Vogels, CTO of Amazon, 2006
 
 ---
 
@@ -73,15 +99,19 @@ Every passing build is **ready to ship** (delivery) — or actually shipped, aut
 
 # So what *is* DevOps?
 
-<VClicks>
+<div class="mt-8 space-y-6 text-2xl">
 
-- It is **not** a job title (even though it is on a lot of business cards).
-- It is **not** a tool.
-- It **is** the practice of applying programming skill to the operational parts of running software.
-- A DevOps person is a systems engineer who codes, or a developer who owns infrastructure.
-- The point is **leverage**: automate the toil so you can ship more, more safely.
+<div><span class="opacity-60">Not</span> a job title.</div>
 
-</VClicks>
+<div v-click><span class="opacity-60">Not</span> a tool.</div>
+
+<div v-click class="text-yellow-400"><strong>The practice of applying programming skill to operational toil.</strong></div>
+
+<div v-click class="text-sm opacity-70 pt-4">
+A systems engineer who codes, or a developer who owns infrastructure. The point is leverage — automate the toil so you ship more, more safely.
+</div>
+
+</div>
 
 ---
 layout: center
@@ -107,7 +137,7 @@ Reused/rewritten from devops-workshop/day1/0intro.md
 2. Get AWS keys
 3. Click an EC2 into existence (the painful way)
 4. Replace clicking with **Terraform**
-5. Make the EC2 install a **Minecraft server + Dynmap** automatically
+5. Make the EC2 install a **Minecraft server + BlueMap** automatically
 6. Point a **domain name** at it
 7. Tear it all down
 

@@ -10,181 +10,181 @@ layout: section
 
 # What you need
 
-<VClicks>
+<div class="grid grid-cols-2 gap-4 mt-6">
 
-- A **terminal** — where you'll type commands.
-- **Terraform** — the tool we'll use to provision infrastructure.
-- The **AWS CLI** — to talk to AWS from your terminal.
-- An **SSH key** (we'll generate one in the SSH keys slide if you don't have one).
-- That's it. No IDE required. No cloud accounts to create.
+<div class="rounded border border-yellow-500/30 p-4">
 
-</VClicks>
+### Terminal
+Where you type commands. macOS and Linux have one; Windows users install WSL.
 
----
+</div>
 
-# Terminal: macOS
+<div class="rounded border border-yellow-500/30 p-4">
 
-<VClicks>
+### Terraform
+The tool we'll use to provision infrastructure.
 
-- You already have one. Open **Terminal.app** (`⌘ + Space`, type "Terminal").
-- Or install **iTerm2** if you want a nicer one: <https://iterm2.com>
-- Verify:
-  ```bash
-  echo "hello"
-  ```
+</div>
 
-</VClicks>
+<div class="rounded border border-yellow-500/30 p-4">
 
----
+### AWS CLI
+To talk to AWS from your terminal.
 
-# Terminal: Linux
+</div>
 
-<VClicks>
+<div class="rounded border border-yellow-500/30 p-4">
 
-- You already have one. Open whichever your distro gives you (GNOME Terminal, Konsole, Alacritty, etc.).
-- Verify:
-  ```bash
-  echo "hello"
-  ```
+### SSH key
+For logging into the EC2. We'll generate one if you don't have it.
 
-</VClicks>
+</div>
+
+</div>
+
+<div class="text-sm opacity-70 mt-4">No IDE required. No cloud accounts to create.</div>
 
 ---
 
-# Terminal: Windows
+# Getting a terminal
 
-<VClicks>
+<div class="grid grid-cols-3 gap-4 mt-4 text-sm">
 
-- Windows PowerShell technically works, but **we'll use WSL** (Windows Subsystem for Linux) so all the commands match the macOS/Linux ones.
-- Install it once, from an Administrator PowerShell:
-  ```powershell
-  wsl --install
-  ```
-- This installs Ubuntu by default. Restart when prompted, then launch **Ubuntu** from the Start menu.
-- From there on, you have a real Linux terminal. Everything in this workshop runs in there.
+<div>
 
-</VClicks>
+#### macOS
+
+Open **Terminal.app** (`⌘ + Space`, "Terminal").
+
+```bash
+echo "hello"
+```
+
+Want nicer? <https://iterm2.com>
+
+</div>
+
+<div>
+
+#### Linux
+
+You already have one — GNOME Terminal, Konsole, Alacritty, whatever your distro ships.
+
+```bash
+echo "hello"
+```
+
+</div>
+
+<div>
+
+#### Windows
+
+Install **WSL** (Windows Subsystem for Linux) so commands match macOS/Linux.
+
+```powershell
+wsl --install
+```
+
+Restart, then launch **Ubuntu** from Start. Everything from here on runs in there.
+
+</div>
+
+</div>
 
 ---
 
 # Installing Terraform
 
-### Pick your OS.
+<div class="grid grid-cols-3 gap-4 mt-4 text-sm">
 
----
+<div>
 
-# Terraform: macOS
+#### macOS
 
 ```bash
 brew install terraform
 ```
 
-<VClicks>
+No Homebrew? <https://brew.sh>
 
-- Don't have Homebrew? Install it first: <https://brew.sh>
-- Verify:
-  ```bash
-  terraform -version
-  ```
-  You should see `Terraform v1.x.x`.
+</div>
 
-</VClicks>
+<div>
 
----
-
-# Terraform: Linux (and WSL)
+#### Linux / WSL
 
 ```bash
-sudo snap install terraform --classic
+sudo snap install \
+  terraform --classic
 ```
 
-<VClicks>
+No snap? Grab the binary from <https://developer.hashicorp.com/terraform/install>.
 
-- Verify:
-  ```bash
-  terraform -version
-  ```
-- No snap? Grab the binary from <https://developer.hashicorp.com/terraform/install> and drop it in `/usr/local/bin/`.
+</div>
 
-</VClicks>
+<div>
 
----
+#### Windows (no WSL)
 
-# Terraform: Windows (no WSL)
+```powershell
+choco install terraform
+```
 
-<VClicks>
+Or download the `.exe` from terraform.io.
 
-- If you really can't use WSL, use **Chocolatey** in PowerShell:
-  ```powershell
-  choco install terraform
-  ```
-- Or download the `.exe` directly: <https://developer.hashicorp.com/terraform/install>
-- Add it to your `PATH`. Open a new PowerShell. Verify:
-  ```powershell
-  terraform -version
-  ```
-- **Strongly recommended**: use WSL instead. The rest of the workshop assumes a Unix shell.
+</div>
 
-</VClicks>
+</div>
+
+<div class="mt-4 text-sm">Verify with <code>terraform -version</code> — you should see <code>Terraform v1.x.x</code>.</div>
 
 ---
 
 # Installing the AWS CLI
 
-### Same idea — pick your OS.
+<div class="grid grid-cols-3 gap-4 mt-4 text-sm">
 
----
+<div>
 
-# AWS CLI: macOS
+#### macOS
 
 ```bash
 brew install awscli
 ```
 
-<VClicks>
+</div>
 
-- Verify:
-  ```bash
-  aws --version
-  ```
-  You should see `aws-cli/2.x.x`.
+<div>
 
-</VClicks>
-
----
-
-# AWS CLI: Linux (and WSL)
+#### Linux / WSL
 
 ```bash
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" \
+  -o awscliv2.zip
 unzip awscliv2.zip
 sudo ./aws/install
 ```
 
-<VClicks>
+(<code>apt install awscli</code> ships an older v1 — prefer the bundled installer.)
 
-- `apt install awscli` works too, but ships an older v1. Use the bundled installer above for v2.
-- Verify:
-  ```bash
-  aws --version
-  ```
+</div>
 
-</VClicks>
+<div>
 
----
+#### Windows (no WSL)
 
-# AWS CLI: Windows (no WSL)
+Download the MSI:
 
-<VClicks>
+<https://awscli.amazonaws.com/AWSCLIV2.msi>
 
-- Download the MSI: <https://awscli.amazonaws.com/AWSCLIV2.msi>
-- Run it. Open a new PowerShell. Verify:
-  ```powershell
-  aws --version
-  ```
-- Or, again, just use WSL and follow the Linux instructions.
+Run it. Open a fresh PowerShell.
 
-</VClicks>
+</div>
+
+</div>
+
+<div class="mt-4 text-sm">Verify with <code>aws --version</code> — you should see <code>aws-cli/2.x.x</code>.</div>
 
 ---
 layout: center

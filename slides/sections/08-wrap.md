@@ -50,16 +50,21 @@ layout: section
 
 # What you can now do
 
-<VClicks>
+<div class="space-y-3 mt-6 text-base">
 
-- Explain DevOps to someone without using the word "DevOps"
-- Walk the request chain from a keystroke to a rendered page
-- Provision a cloud VM with Terraform — from scratch, with state, with outputs
-- Install software on it declaratively, with dependencies that survive replacement
-- Point a domain at it via DNS
-- Tear the whole thing down on demand
+<div class="flex gap-3"><span class="text-yellow-400 font-bold">✓</span><span>Explain DevOps to someone without using the word "DevOps"</span></div>
 
-</VClicks>
+<div class="flex gap-3" v-click><span class="text-yellow-400 font-bold">✓</span><span>Walk the request chain from a keystroke to a rendered page</span></div>
+
+<div class="flex gap-3" v-click><span class="text-yellow-400 font-bold">✓</span><span>Provision a cloud VM with Terraform — from scratch, with state, with outputs</span></div>
+
+<div class="flex gap-3" v-click><span class="text-yellow-400 font-bold">✓</span><span>Install software on it declaratively, with dependencies that survive replacement</span></div>
+
+<div class="flex gap-3" v-click><span class="text-yellow-400 font-bold">✓</span><span>Point a domain at it via DNS</span></div>
+
+<div class="flex gap-3" v-click><span class="text-yellow-400 font-bold">✓</span><span>Tear the whole thing down on demand</span></div>
+
+</div>
 
 ---
 layout: center
@@ -82,17 +87,58 @@ cd support/tf/minecraft && terraform destroy --var-file=tf.vars
 
 # Topics we did not touch
 
-<VClicks>
+<div class="grid grid-cols-3 gap-3 mt-6 text-xs">
 
-- **Containers / Docker** — packaging the app itself
-- **CI/CD** — automating the build/test/deploy loop
-- **Kubernetes** — orchestrating containers at scale
-- **Observability** — Prometheus, Grafana, logs, traces
-- **Secrets** — Vault, AWS Secrets Manager, sealed-secrets
-- **Configuration management** — Ansible, Chef, Puppet
-- **GitOps** — Git as the source of truth for infra
+<div class="rounded border border-yellow-500/30 p-3">
 
-</VClicks>
+#### 🐳 Containers / Docker
+Packaging the app itself.
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-3">
+
+#### 🔁 CI/CD
+Automating build → test → deploy.
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-3">
+
+#### ☸️ Kubernetes
+Orchestrating containers at scale.
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-3">
+
+#### 👁️ Observability
+Prometheus, Grafana, logs, traces.
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-3">
+
+#### 🔐 Secrets
+Vault, AWS Secrets Manager, sealed-secrets.
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-3">
+
+#### 📜 Config management
+Ansible, Chef, Puppet.
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-3 col-span-3">
+
+#### ⚙️ GitOps
+Git as the source of truth for infrastructure (Flux, ArgoCD).
+
+</div>
+
+</div>
 
 <!-- Reused from devops-workshop/slides.md "Topics Not Covered" section -->
 

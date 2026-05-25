@@ -8,14 +8,37 @@ layout: section
 
 # We have a server. What does that mean?
 
-<VClicks>
+<div class="grid grid-cols-2 gap-4 mt-6 text-sm">
 
-- A real, running Linux machine sitting in an AWS datacenter in Ireland.
-- It has a public IP. It accepts SSH on port 22 (we opened that in the security group).
-- It knows about your public key (we uploaded that via `aws_key_pair`).
-- Which means: we can log into it right now, from your laptop, as if it were on your desk.
+<div class="rounded border border-yellow-500/30 p-4">
 
-</VClicks>
+#### Real Linux box
+A running Ubuntu VM in an AWS datacenter in Ireland.
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-4">
+
+#### Public IP
+Routable on the open internet. Anyone can try to connect.
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-4">
+
+#### SSH open on :22
+The security group lets your laptop reach it.
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-4">
+
+#### Knows your key
+`aws_key_pair` uploaded your public half. You can log in right now.
+
+</div>
+
+</div>
 
 ---
 
@@ -79,15 +102,44 @@ exit               # back to your laptop
 
 # What we actually need to install
 
-<VClicks>
+<div class="grid grid-cols-5 gap-3 mt-6 text-xs">
 
-- **Java 21** — the Minecraft server is a Java program. Ubuntu doesn't ship with it.
-- **The server JAR** — we'll use **PaperMC** (a Spigot-compatible server, faster and easier to distribute).
-- **EULA acceptance** — Mojang requires you to `echo eula=true > eula.txt` before the server will boot.
-- **The BlueMap plugin JAR** — dropped into a `plugins/` folder; serves a 3D web map on port 8100.
-- **A way to keep it running** — if we just launch it, it dies when SSH disconnects. We need a **systemd service**.
+<div class="rounded border border-yellow-500/30 p-3">
 
-</VClicks>
+#### ☕ Java 21
+The server is a Java program. Ubuntu doesn't ship with it.
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-3">
+
+#### 🧱 PaperMC
+The server JAR itself — Spigot-compatible, faster, easier to distribute.
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-3">
+
+#### ✍️ EULA
+Mojang requires `eula=true` in a file before the server will boot.
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-3">
+
+#### 🗺️ BlueMap
+Plugin JAR; serves a 3D web map on port 8100.
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-3">
+
+#### ⚙️ systemd
+Keeps the process alive after SSH disconnects + restarts on crash.
+
+</div>
+
+</div>
 
 ---
 

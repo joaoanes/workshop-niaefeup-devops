@@ -8,15 +8,32 @@ layout: section
 
 # Where do we deploy?
 
-<VClicks>
+### A server is just a computer that listens for requests. Almost always Linux.
 
-- A **server** is just a computer that listens for requests and sends back data.
-- Could be in your closet. Usually it's somebody else's closet.
-- That computer almost always runs **Linux**. The one we'll rent today does too.
-- **VPS** (Virtual Private Server): a slice of a big machine, sold by the hour. Cheap, flexible.
-- **Bare metal**: a whole physical machine. Expensive, fast.
+<div class="grid grid-cols-3 gap-4 mt-6 text-sm">
 
-</VClicks>
+<div class="rounded border border-yellow-500/30 p-4">
+
+#### Your closet
+A box you own and plug into your home network. Free-ish, but you eat the power bill, the noise, and the dynamic-IP problem.
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-4">
+
+#### VPS
+A slice of a big machine, sold by the hour. Cheap, flexible, what almost every small project uses. **Today's option.**
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-4">
+
+#### Bare metal
+A whole physical machine in someone else's datacenter. Expensive, fast, predictable.
+
+</div>
+
+</div>
 
 <!-- Reused from devops-workshop/day1/2hosting.md -->
 
@@ -24,17 +41,33 @@ layout: section
 
 # Where to rent one?
 
-<VClicks>
+<div class="grid grid-cols-2 gap-6 mt-4">
 
-- Depends on **how much money you have** and **what your requirements are**.
-- For personal projects: **Hetzner / Scaleway / OVH**. Cheap, raw, generally great value.
-  - "Raw" doesn't mean closer to bare metal or less management. It means **fewer nice APIs** — provisioning with Terraform may be limited, the security model is largely yours to implement, integrations are sparse.
-- For anything serious: **AWS / Azure / GCP**. The big three.
-  - More expensive, but every possible integration. Hundreds of products beyond hosting.
-  - They don't just sell you servers — they sell you everything an IT enterprise needs. Storage, databases, queues, ML, networking, identity. Even satellites (AWS Ground Station).
-- Today: **AWS**, because the tooling and IAM story are what you'll see at work.
+<div class="rounded border border-yellow-500/30 p-4">
 
-</VClicks>
+### Hetzner / Scaleway / OVH
+**Personal projects.** Cheap, raw, great value.
+
+- Fewer nice APIs (limited Terraform support)
+- Security model largely yours to implement
+- Sparse integrations
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-4">
+
+### AWS / Azure / GCP
+**Anything serious.** Expensive, but every possible integration.
+
+- Hundreds of products beyond hosting (DBs, queues, ML, identity, even satellites)
+- Built-in IAM, monitoring, deploys
+- What you'll see at work
+
+</div>
+
+</div>
+
+<div class="text-center mt-6 text-lg">Today: <strong class="text-yellow-400">AWS</strong>.</div>
 
 ---
 
@@ -56,10 +89,9 @@ layout: section
 
 <VClicks>
 
-- **IAM** — Identity and Access Management — is how AWS decides **who can do what**.
-- Every API call is checked against a policy: "is this user allowed to launch an EC2? in this region? with this tag?".
-- Roles, groups, policies, conditions — all composable. Fine-grained enough to scope by tag, by IP, by time of day.
-- IAM is the part of AWS that makes the cloud usable by large teams without everyone stepping on each other.
+- **IAM** — Identity and Access Management — decides **who can do what**.
+- Every API call is checked: "can this user launch an EC2? in this region? with this tag?"
+- The reason large teams can share one cloud account without stepping on each other.
 
 </VClicks>
 
@@ -127,7 +159,7 @@ aws sts `
 
 <VClicks>
 
-- `aws configure` prompts for your access key + secret. Paste from the pen drive.
+- `aws configure` prompts for your access key + secret. Paste from the sheet.
 - `aws sts get-caller-identity` should print:
   ```json
   {

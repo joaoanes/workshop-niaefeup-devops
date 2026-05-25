@@ -27,18 +27,19 @@ TODO: drop in screenshots once captured, or skip and do it all live.
 -->
 
 ---
+layout: fact
+---
 
-# Count the clicks
+# 7 / 3 / 1 / 1
 
-<VClicks>
+<div class="grid grid-cols-4 gap-4 text-sm text-center mt-6 max-w-3xl mx-auto">
+<div>screens to click through</div>
+<div>dropdowns where the default is wrong</div>
+<div>download you cannot lose</div>
+<div>region selector that has bitten everyone</div>
+</div>
 
-- ~7 screens.
-- ~3 dropdowns where the default is wrong.
-- 1 download that you must not lose.
-- 1 region selector that has bitten everyone who has ever used AWS.
-- Repeat for every machine. Repeat after every mistake.
-
-</VClicks>
+<div class="mt-8 text-base opacity-80">…repeat for every machine, every mistake, every time.</div>
 
 ---
 layout: statement
@@ -49,14 +50,12 @@ layout: statement
 ### Or 500. Or every time a deploy fails.
 
 ---
+layout: statement
+---
 
-# What we just learned
+# Console for exploring. Code for repeating.
 
-<VClicks>
-
-- The console is **fine** for exploring.
-- The console is **terrible** for repeating.
-- Nothing we did is reviewable. No diff. No history. No teardown button that means it.
-- This is exactly the problem **Infrastructure as Code** solves.
-
-</VClicks>
+<div class="mt-6 text-base opacity-70">
+Nothing we just did is reviewable. No diff. No history. No teardown button that means it.<br/>
+That's exactly the problem <strong class="text-yellow-400">Infrastructure as Code</strong> solves.
+</div>

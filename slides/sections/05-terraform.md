@@ -119,23 +119,25 @@ Or download the `.exe` from terraform.io.
 
 # How a Terraform file is structured
 
-<VClicks>
-
-- A Terraform file is a list of **blocks**. Each block has a type, optional labels, and a body.
-- The body is a set of key-value pairs (and other nested blocks).
-- General shape:
-  ```hcl
-  BLOCK_TYPE "label_a" "label_b" {
+```hcl {1|2|3-4|5-7|all}
+BLOCK_TYPE "label_a" "label_b" {
+  key       = value
+  other_key = "string"
+  nested {
     key = value
-    other_key = "string"
-    nested {
-      key = value
-    }
   }
-  ```
+}
+```
+
+<v-clicks>
+
+- A Terraform file is a list of **blocks**.
+- Each block has a **type** (the first word).
+- One or more **labels** (the quoted strings).
+- And a **body** — key/value pairs, sometimes other nested blocks.
 - Different block types mean different things. Let's look at the main ones.
 
-</VClicks>
+</v-clicks>
 
 ---
 
@@ -250,14 +252,45 @@ There are more block types (<code>module</code>, <code>locals</code>, <code>terr
 
 # The workflow (memorize this)
 
-<VClicks>
+<div class="flex items-center justify-center gap-2 mt-6 mb-4 text-yellow-400 font-mono text-sm">
+  <span>init</span><span>→</span>
+  <span>plan</span><span>→</span>
+  <span>apply</span><span>→</span>
+  <span>(iterate)</span><span>→</span>
+  <span>destroy</span>
+</div>
 
-- `terraform init` — download providers, set up backend
-- `terraform plan` — show me what you would change
-- `terraform apply` — actually do it
-- `terraform destroy` — undo everything
+<div class="grid grid-cols-4 gap-3 mt-4 text-sm">
 
-</VClicks>
+<div class="rounded border border-yellow-500/30 p-3">
+
+#### `init`
+Download providers, set up backend. Run once per project.
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-3">
+
+#### `plan`
+Show me what would change. Never destructive.
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-3">
+
+#### `apply`
+Actually do it. Asks for confirmation unless `-auto-approve`.
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-3">
+
+#### `destroy`
+Undo everything in state. Asks once. Say yes only when you mean it.
+
+</div>
+
+</div>
 
 ---
 
@@ -327,16 +360,12 @@ Apply complete! Resources: 1 added.
 <!-- Reused from devops-workshop/day1/5terraform.md -->
 
 ---
+layout: statement
+---
 
-# terraform destroy
+# `destroy` undoes everything.
 
-<VClicks>
-
-- Inverse of apply. Deletes everything in state.
-- Asks for confirmation. Say `yes` only when you mean it.
-- We will run this at the end. Religiously.
-
-</VClicks>
+### Asks once. Say `yes` only when you mean it. We'll run this at the end. Religiously.
 
 ---
 layout: center
@@ -350,32 +379,53 @@ layout: center
 
 # Detour: SSH keys
 
-<VClicks>
+### Before we touch Terraform, generate a key pair:
 
-- Before we touch Terraform, you need an SSH key pair. Terraform will use it to give you access to the EC2.
-- An SSH key pair has two halves:
-  - **Private key** — stays on your laptop. Never share it.
-  - **Public key** — safe to copy anywhere. Servers store it to recognize you.
-- Generate one:
-  ```bash
-  ssh-keygen -t ed25519
-  ```
-  Press enter through the prompts. You now have `~/.ssh/id_ed25519` (private) and `~/.ssh/id_ed25519.pub` (public).
+```bash
+ssh-keygen -t ed25519
+```
 
-</VClicks>
+<div class="grid grid-cols-2 gap-6 mt-6">
 
+<div class="rounded border border-red-500/40 p-4">
+
+### 🔒 Private key
+`~/.ssh/id_ed25519`
+
+Stays on your laptop. **Never share.** Anyone with this is you.
+
+</div>
+
+<div class="rounded border border-yellow-500/30 p-4">
+
+### 📤 Public key
+`~/.ssh/id_ed25519.pub`
+
+Safe to copy anywhere. Servers store it to recognize you.
+
+</div>
+
+</div>
+
+---
+layout: center
 ---
 
 # How SSH key auth works
 
-<VClicks>
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Server
+    Note over Server: ~/.ssh/authorized_keys<br/>has your public key
+    Client->>Server: I'm "ubuntu", let me in
+    Server->>Client: Prove it — sign this random challenge
+    Client->>Server: Signed (with my private key)
+    Server->>Server: Verify with public key
+    Server->>Client: ✓ in. shell prompt.
+```
 
-- On the server, your public key gets appended to `~/.ssh/authorized_keys` (in the user's home directory).
-- When you connect, the server says "prove you have the matching private key." Your client does, without ever sending the key itself.
-- Done. You're in. No password.
-- Today, **Terraform handles the "put the key in `authorized_keys`" step for you** — that's what the `aws_key_pair` resource does.
-
-</VClicks>
+<div class="mt-4 text-sm opacity-80">Private key never leaves your laptop. Today, <strong>Terraform handles "put the public key in authorized_keys" via <code>aws_key_pair</code></strong>.</div>
 
 ---
 
@@ -442,10 +492,9 @@ resource "aws_key_pair" "student_key" {
 
 # Step 4 — Who's allowed in? `aws_security_group`
 
-```hcl {maxHeight:'320px'}
+```hcl {1-2|4-10|12-18|20-26|28-33|all}
 resource "aws_security_group" "student_sg" {
-  name        = "student-sg-${random_pet.student_id.id}"
-  description = "SSH + Minecraft + BlueMap"
+  name = "student-sg-${random_pet.student_id.id}"
 
   ingress {
     description = "SSH"

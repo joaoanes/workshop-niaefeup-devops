@@ -5,31 +5,14 @@ layout: section
 # 7. DNS
 
 ---
-
-# We have a server. It's an IP. That feels wrong.
-
-<VClicks>
-
-- `54.234.118.42` is hard to remember, hard to type, hard to share.
-- IPs change when machines change. Names don't have to.
-- We want: `mine.yourdomain.tld` → our box.
-
-</VClicks>
-
-<!-- Reused from devops-workshop/day2/5dns.md -->
-
+layout: statement
 ---
 
-# Quick recap (we covered this in section 2)
+# An IP is not a name.
 
-<VClicks>
+### `54.234.118.42` is hard to remember, hard to share, and changes when the machine changes.
 
-- A **registrar** (Namecheap, Cloudflare, Porkbun…) leases you a name.
-- **NS records** at the registry point to nameservers.
-- The nameserver holds your **A** records (→ IPv4), **CNAMEs** (→ another name), etc.
-- Today we just need one A record pointing your name at the EC2 IP.
-
-</VClicks>
+### We want `mine.yourdomain.tld` → our box.
 
 ---
 
