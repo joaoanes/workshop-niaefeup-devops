@@ -517,7 +517,7 @@ resource "aws_security_group" "student_sg" {
 
 # Step 4b — Open the game ports
 
-<div class="text-xs">
+<div style="transform: scale(0.8); transform-origin: top left;">
 
 ```hcl
 # ...inside the same aws_security_group block
