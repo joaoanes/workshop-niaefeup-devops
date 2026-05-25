@@ -103,7 +103,8 @@ Restart, then launch **Ubuntu** from Start. Everything from here on runs in ther
 #### macOS
 
 ```bash
-brew install terraform
+brew tap hashicorp/tap
+brew install hashicorp/tap/terraform
 ```
 
 No Homebrew? <https://brew.sh>
