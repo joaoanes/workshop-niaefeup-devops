@@ -1,0 +1,13 @@
+[build]
+  base    = "slides"
+  publish = "dist"
+  command = "npm install && npm run build -- --base /"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Slidev uses client-side routing; serve index.html for unknown paths.
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
