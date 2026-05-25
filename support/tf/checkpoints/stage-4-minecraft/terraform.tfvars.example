@@ -1,0 +1,6 @@
+student_public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA... your-name@your-machine"
+
+# Optional overrides:
+# ssh_private_key_path     = "~/.ssh/id_ed25519"
+# minecraft_server_jar_url = "..."
+# dynmap_jar_url           = "..."

@@ -71,9 +71,13 @@ layout: center
 
 ## We've generated IAM users for this workshop.
 
-### We'll be passing them along on a pen drive.
+### Grab yours from the shared sheet:
 
-The accounts have **limits set on them**, so don't worry about runaway bills.
+<a href="https://docs.google.com/spreadsheets/d/REPLACE_ME" class="text-xl">
+docs.google.com/spreadsheets/d/REPLACE_ME
+</a>
+
+Find your row, copy the access key + secret. The accounts have **limits set on them**, so don't worry about runaway bills.
 
 ---
 

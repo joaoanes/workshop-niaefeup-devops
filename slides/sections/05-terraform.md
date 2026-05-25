@@ -600,9 +600,29 @@ output "bluemap_url" {
 </VClicks>
 
 ---
+
+# Create your `terraform.tfvars`
+
+### One file, two lines. Don't commit it.
+
+```hcl
+# terraform.tfvars
+student_public_key   = "ssh-ed25519 AAAAC3NzaC1... your-name"
+ssh_private_key_path = "~/.ssh/id_ed25519"
+```
+
+<VClicks>
+
+- Get the public key contents with `cat ~/.ssh/id_ed25519.pub` and paste the whole line.
+- The file is named `terraform.tfvars` so Terraform auto-loads it. No `--var-file` flag needed.
+- Already in `.gitignore` — your private bits never go to the repo.
+
+</VClicks>
+
+---
 layout: center
 ---
 
-# 🚀 `terraform apply --var-file=tf.vars`
+# 🚀 `terraform apply`
 
-## Go. See what happens.
+### Go. See what happens.

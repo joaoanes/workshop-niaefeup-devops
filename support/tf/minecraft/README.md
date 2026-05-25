@@ -1,24 +1,24 @@
-# Proof: the full working stack
+# Minecraft stack — the full working reference
 
-End-to-end working Terraform config for the workshop. This is the **reference
-implementation**. The slides and checkpoint stages should mirror what's here.
+End-to-end Terraform stack for the workshop. This is the **reference
+implementation** — slides should mirror what's here.
 
 ## What it builds
 
 - An Ubuntu 22.04 EC2 (`t3.small`) in `eu-west-1`
 - A unique SSH key pair (using your laptop's public key)
-- A security group (SSH 22, Minecraft 25565, Dynmap 8123)
+- A security group (SSH 22, Minecraft 25565, BlueMap 8100)
 - A `null_resource` that copies `install.sh` + `minecraft.service` to the box
   and runs the install
-- A running PaperMC server with the Dynmap plugin, supervised by systemd
+- A running PaperMC 1.21.11 server with the BlueMap plugin, supervised by systemd
 
 ## Files
 
 ```
-proof/
+minecraft/
 ├── main.tf                  # providers, resources, null_resource provisioning
 ├── variables.tf             # input variables
-├── outputs.tf               # ssh_command, minecraft_address, dynmap_url
+├── outputs.tf               # ssh_command, minecraft_address, bluemap_url
 ├── install.sh               # the actual provisioning recipe (apt/wget/systemd)
 ├── minecraft.service        # systemd unit
 └── terraform.tfvars.example # copy to terraform.tfvars and fill in

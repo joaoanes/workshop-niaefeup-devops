@@ -20,29 +20,14 @@ layout: section
 
 ---
 
-# Registering a domain
+# Quick recap (we covered this in section 2)
 
 <VClicks>
 
-- Buy from a **registrar**: Namecheap, GoDaddy, Cloudflare, Porkbun.
-- `.com`/`.org`/`.net` → roughly $10–$15/year.
-- Vanity TLDs (`.xyz`, `.fun`, `.lol`) → as low as $1–$3/year.
-- After purchase you get a **dashboard** where you can edit DNS records.
-
-</VClicks>
-
----
-
-# DNS records — the ones that matter
-
-<VClicks>
-
-- **A** — domain → IPv4 address
-- **AAAA** — domain → IPv6 address
-- **CNAME** — alias to another domain (cannot be the apex domain)
-- **MX** — mail server
-- **TXT** — arbitrary text (used for SPF, DKIM, domain verification)
-- **NS** — which servers are authoritative for this domain
+- A **registrar** (Namecheap, Cloudflare, Porkbun…) leases you a name.
+- **NS records** at the registry point to nameservers.
+- The nameserver holds your **A** records (→ IPv4), **CNAMEs** (→ another name), etc.
+- Today we just need one A record pointing your name at the EC2 IP.
 
 </VClicks>
 

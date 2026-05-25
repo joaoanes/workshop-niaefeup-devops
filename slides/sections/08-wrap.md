@@ -6,6 +6,48 @@ layout: section
 
 ---
 
+# This was a teaching stack, not production
+
+<div class="grid grid-cols-2 gap-6 mt-4 text-sm">
+
+<div>
+
+### What we did (great for learning)
+
+- Local Terraform state
+- `null_resource` + `remote-exec`
+- SSH open to `0.0.0.0/0`
+- Server in `online-mode=false`
+- World stored on the instance's disk
+- No HTTPS / no certificates
+- All 20 students in one AWS account
+
+</div>
+
+<div>
+
+### What you'd do in production
+
+- Remote state (S3 + DynamoDB locking)
+- `user_data` / Packer / Ansible / configmgmt
+- SSH only from a bastion or VPN
+- Real Mojang auth, signed sessions
+- EBS snapshots + offsite backups
+- Caddy / nginx + Let's Encrypt
+- One account per team, with SCPs
+
+</div>
+
+</div>
+
+<VClicks>
+
+- Every shortcut above was deliberate. Knowing the shortcut exists is half the battle.
+
+</VClicks>
+
+---
+
 # What you can now do
 
 <VClicks>

@@ -330,14 +330,53 @@ http://<your-public-ip>:8100
 
 ---
 
-# What we just did
+# What we just did — the whole stack
+
+```mermaid
+flowchart LR
+  laptop["Your laptop<br/>(terraform CLI)"]
+  ec2["EC2 (Ubuntu 22.04)<br/>PaperMC + BlueMap<br/>+ systemd"]
+  client["Minecraft client"]
+  browser["Browser"]
+  laptop -- "SSH 22<br/>(provisioning)" --> ec2
+  client -- "TCP 25565" --> ec2
+  browser -- "HTTP 8100" --> ec2
+```
 
 <VClicks>
 
-- Declared a machine.
-- Declared what should be on it.
-- Declared the dependency between them.
-- Terraform handles ordering, replacement, teardown.
-- This is **declarative provisioning**. The whole point.
+- One Terraform stack on your laptop produced everything on the right.
+- The recipe is in `install.sh`; the systemd unit keeps it alive.
+- Replace the instance → install re-runs. Edit the script → install re-runs. No drift.
+
+</VClicks>
+
+---
+
+# When it breaks (and it will)
+
+```bash
+# Did terraform actually see what I changed?
+terraform plan
+
+# What did terraform print for the IP / URLs?
+terraform output
+
+# Can I SSH at all?
+ssh -v ubuntu@$(terraform output -raw instance_public_ip)
+
+# Once on the box: is the service up? logs?
+sudo systemctl status minecraft
+sudo journalctl -u minecraft -f
+
+# Re-run just the install, keep the box
+terraform apply -replace=null_resource.minecraft_install
+```
+
+<VClicks>
+
+- `terraform plan` first — never assume. Surprises in plan are bugs in your head.
+- `ssh -v` shows you exactly where the connection fails (auth, network, key).
+- `journalctl -f` tails the server log live — watch world generation, watch crashes.
 
 </VClicks>
