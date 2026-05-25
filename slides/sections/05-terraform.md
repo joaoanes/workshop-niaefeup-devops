@@ -517,6 +517,8 @@ resource "aws_security_group" "student_sg" {
 
 # Step 4b — Open the game ports
 
+<div class="text-xs">
+
 ```hcl
 # ...inside the same aws_security_group block
 
@@ -543,6 +545,8 @@ resource "aws_security_group" "student_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 ```
+
+</div>
 
 <VClicks>
 
