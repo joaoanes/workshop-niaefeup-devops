@@ -1,0 +1,9 @@
+/* the-unnamed theme paints inline <code> bright white, which is unreadable
+   on the yellow heading backgrounds. Inherit the heading color instead. */
+h1 code,
+h2 code,
+h3 code,
+h4 code {
+  color: inherit !important;
+  background: transparent !important;
+}

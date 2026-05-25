@@ -1,0 +1,13 @@
+[Unit]
+Description=Minecraft Server (PaperMC + Dynmap)
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/opt/minecraft
+ExecStart=/usr/bin/java -Xmx1024M -Xms1024M -jar /opt/minecraft/server.jar nogui
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
