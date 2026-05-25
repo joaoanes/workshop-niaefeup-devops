@@ -73,8 +73,8 @@ layout: center
 
 ### Grab yours from the shared sheet:
 
-<a href="https://docs.google.com/spreadsheets/d/REPLACE_ME" class="text-xl">
-docs.google.com/spreadsheets/d/REPLACE_ME
+<a href="https://docs.google.com/spreadsheets/d/1lU12SAphXJnN0eFz8DzUbNp965_mrTHePDDTJtqeTCM/edit?gid=1219591200#gid=1219591200" class="text-xl">
+docs.google.com/spreadsheets/.../student-creds
 </a>
 
 Find your row, copy the access key + secret. The accounts have **limits set on them**, so don't worry about runaway bills.
