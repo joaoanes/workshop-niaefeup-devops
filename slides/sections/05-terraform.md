@@ -490,9 +490,9 @@ resource "aws_key_pair" "student_key" {
 
 ---
 
-# Step 4 — Who's allowed in? `aws_security_group`
+# Step 4a — Who's allowed in? `aws_security_group`
 
-```hcl {1-2|4-10|12-18|20-26|28-33|all}
+```hcl
 resource "aws_security_group" "student_sg" {
   name = "student-sg-${random_pet.student_id.id}"
 
@@ -503,6 +503,22 @@ resource "aws_security_group" "student_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+}
+```
+
+<VClicks>
+
+- Security groups are AWS's firewall. **`ingress`** whitelists inbound, **`egress`** whitelists outbound. Everything not listed is denied.
+- This skeleton opens port 22 from anywhere so you can SSH in. Fine for a workshop — for production you'd restrict to a known IP or bastion.
+
+</VClicks>
+
+---
+
+# Step 4b — Open the game ports
+
+```hcl
+# ...inside the same aws_security_group block
 
   ingress {
     description = "Minecraft"
@@ -523,16 +539,15 @@ resource "aws_security_group" "student_sg" {
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = "-1"
+    protocol    = "-1"   # all protocols
     cidr_blocks = ["0.0.0.0/0"]
   }
-}
 ```
 
 <VClicks>
 
-- Security groups are AWS's firewall: which ports can talk to your instance, from where.
-- Opening 22 (SSH), 25565 (Minecraft), 8100 (BlueMap web map). Everything else is closed.
+- Two more `ingress` rules: **25565** for the Minecraft client, **8100** for the BlueMap web view.
+- One `egress` letting the box reach the whole internet — required so `apt-get` and `wget` work during provisioning.
 
 </VClicks>
 
